@@ -11,7 +11,7 @@ class User(db.Model):
 
 
 restaurant_category = db.Table(
-    'restaurant category',
+    'restaurant_category',
     db.Column('restaurant_id', db.Integer, db.ForeignKey(
         'restaurant.id'), primary_key=True),
     db.Column('category_id', db.Integer, db.ForeignKey(
