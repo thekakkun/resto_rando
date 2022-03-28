@@ -2,7 +2,7 @@ from flask import Flask
 from flask_migrate import Migrate
 import os
 
-from .models import db
+from models import db
 
 DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
