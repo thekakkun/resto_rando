@@ -1,8 +1,9 @@
-from flask import Flask
-from flask_migrate import Migrate
 import os
 
-from models import db
+from flask import Flask, jsonify
+from flask_migrate import Migrate
+
+from models import Category, db
 
 DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
@@ -18,3 +19,13 @@ migrate = Migrate(app, db)
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
+
+
+@app.route("/api/categories", methods=['GET'])
+def get_categories():
+    categories = Category.query.all()
+
+    return jsonify({
+        'success': True,
+        "categories": {cat.id: cat.name for cat in categories}
+    })

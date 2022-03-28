@@ -16,6 +16,7 @@ Get the list of categories.
 
 ```json
 {
+  "success": true,
   "categories": {
     "0": "African"
   }
