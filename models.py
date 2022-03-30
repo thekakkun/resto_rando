@@ -3,11 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 
-class User(db.Model):
-    __tablename__ = 'user'
+class Account(db.Model):
+    __tablename__ = 'account'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(), unique=True, nullable=False)
-    restaurants = db.relationship('Restaurant', backref='user', lazy=True)
+    name = db.Column(db.String(), unique=True, nullable=False)
+    restaurants = db.relationship('Restaurant', backref='account', lazy=True)
 
 
 restaurant_category = db.Table(
@@ -28,7 +28,7 @@ class Restaurant(db.Model):
     date_visited = db.Column(db.Date, nullable=True)
     categories = db.relationship('Category', secondary=restaurant_category,
                                  lazy='subquery', backref=db.backref('restaurants', lazy=True))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
 
 
 class Category(db.Model):
