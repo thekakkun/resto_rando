@@ -131,14 +131,14 @@ curl -X POST URL/api/restaurants \
 }
 ```
 
-#### `PATCH /api/restaurants`
+#### `PATCH /api/restaurants/{restaurant_id}`
 
 Edit a restaurant in the database.
 
 ##### Example
 
 ```
-curl -X PATCH URL/api/restaurants \
+curl -X PATCH URL/api/restaurants/2 \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
     --data '{"visited": true}'
