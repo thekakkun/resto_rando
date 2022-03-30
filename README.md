@@ -89,7 +89,7 @@ Add a new restaurant to the database.
 curl -X POST URL/api/restaurants \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
-    --data "{'name': 'Foo Foods','address': '123 Pacific Drive, Los Angeles, CA','categories': ['Asian', 'Fast Food'],'visited': false}'
+    --data '{"name":"Foo Foods","address":"123 Pacific Drive, Los Angeles, CA","categories":["Asian", "Fast Food"],"visited":false}'
 ```
 
 ###### Parameters
@@ -141,7 +141,7 @@ Edit a restaurant in the database.
 curl -X PATCH URL/api/restaurants \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
-    --data "{'visited': true}'
+    --data '{"visited": true}'
 ```
 
 ###### Parameters
@@ -221,7 +221,7 @@ Get a random restaurant from the database. Results can be restricted by category
 curl -X POST URL/api/restaurants \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
-    --data "{'category': ['Asian', 'Fast Food'],'visited': true}'
+    --data '{"category": ["Asian", "Fast Food"],"visited": true}'
 ```
 
 ###### Parameters
