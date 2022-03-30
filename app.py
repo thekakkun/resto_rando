@@ -30,15 +30,22 @@ def get_categories():
 
 @app.route("/api/<int:cat_id>/restaurants", methods=['GET'])
 def get_resto_by_cat(cat_id):
+    cat = Category.query.get(cat_id)
     return jsonify({
-        'success': True
+        'success': True,
+        'category': cat.name,
+        'restaurants': [resto.out() for resto in cat.restaurants]
     })
 
 
 @app.route("/api/restaurants", methods=['GET'])
 def get_resto():
+    restaurants = Restaurant.query.all()
+
     return jsonify({
         'success': True,
+        'category': None,
+        'restaurants': [resto.out() for resto in restaurants]
     })
 
 
@@ -50,7 +57,7 @@ def add_resto():
         name=data['name'],
         address=data['address'],
         visited=data.get('visited', False),
-        account_id=1 # TODO: update once user accounts are implemented
+        account_id=1  # TODO: update once user accounts are implemented
     )
     for cat in data['categories']:
         resto.categories.append(Category.query.filter_by(name=cat).first())

@@ -28,7 +28,17 @@ class Restaurant(db.Model):
     date_visited = db.Column(db.Date, nullable=True)
     categories = db.relationship('Category', secondary=restaurant_category,
                                  lazy='subquery', backref=db.backref('restaurants', lazy=True))
-    account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey(
+        'account.id'), nullable=False)
+
+    def out(self):
+        return {
+            'name': self.name,
+            'address': self.address,
+            'visited': self.visited,
+            'date_visited': self.date_visited,
+            'categories': [cat.name for cat in self.categories]
+        }
 
 
 class Category(db.Model):
