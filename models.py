@@ -33,6 +33,7 @@ class Restaurant(db.Model):
 
     def out(self):
         return {
+            'id': self.id,
             'name': self.name,
             'address': self.address,
             'visited': self.visited,

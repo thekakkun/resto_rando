@@ -65,22 +65,53 @@ def add_resto():
     db.session.add(resto)
     db.session.commit()
 
+    restaurants = Restaurant.query.all()
+
     return jsonify({
         'success': True,
+        'category': None,
+        'restaurants': [resto.out() for resto in restaurants]
     })
 
 
-@app.route("/api/<int:resto_id>/restaurants", methods=['PATCH'])
+@app.route("/api/restaurants/<int:resto_id>", methods=['PATCH'])
 def edit_resto(resto_id):
+    data = request.json
+    resto = Restaurant.query.get(resto_id)
+
+    resto.name = data.get('name', resto.name)
+    resto.address = data.get('address', resto.address)
+    resto.visited = data.get('visited', resto.visited)
+    resto.date_visited = data.get('date_visited', resto.date_visited) # TODO: figure out how this works
+
+    if 'categories' in data:
+        resto.categories = []
+        for cat in data['categories']:
+            resto.categories.append(Category.query.filter_by(name=cat).first())
+
+    db.session.commit()
+
+    restaurants = Restaurant.query.all()
+
     return jsonify({
         'success': True,
+        'category': None,
+        'restaurants': [resto.out() for resto in restaurants]
     })
 
 
-@app.route("/api/<int:resto_id>/restaurants", methods=['DELETE'])
+@app.route("/api/restaurants/<int:resto_id>", methods=['DELETE'])
 def delete_resto(resto_id):
+    resto = Restaurant.query.get(resto_id)
+    db.session.delete(resto)
+    db.session.commit()
+
+    restaurants = Restaurant.query.all()
+
     return jsonify({
         'success': True,
+        'category': None,
+        'restaurants': [resto.out() for resto in restaurants]
     })
 
 
