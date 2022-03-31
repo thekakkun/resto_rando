@@ -51,6 +51,46 @@ curl -X Get URL/api/restaurants \
 }
 ```
 
+#### `POST /api/restaurant/`
+
+Find a restaurant by keyword.
+
+##### Example
+
+```bash
+curl -X POST URL/api/restaurants \
+    --header "Authorization: Bearer {access token}" \
+    --header "Content-Type: application/json" \
+    --data '{"search_term": "Best"}'
+```
+
+###### Parameters
+
+```json
+{
+  "search_term": "Best"
+}
+```
+
+- search_term (string): Keyword to search for. Case insensitive.
+
+##### Returns
+
+```json
+{
+  "success": true,
+  "category": "Asian",
+  "restaurants" [
+      {
+          "name": "Best Restaurant",
+          "address": "123 Main Street, New York, NY",
+          "categories": ["African", "Vegan"],
+          "visited": true
+      },
+  ]
+}
+```
+
 #### `GET /api/categories/{category_id}/restaurants`
 
 Get the list of restaurants belonging to a category.
@@ -210,10 +250,7 @@ curl -X DELETE URL/api/restaurants/{0} \
       {
           "name": "Best Restaurant",
           "address": "123 Main Street, New York, NY",
-          "categories": [
-              "African",
-              "Vegan"
-          ],
+          "categories": ["African", "Vegan"],
           "visited": true
       },
   ]
@@ -249,6 +286,7 @@ curl -X POST URL/api/restaurants \
 ```json
 {
   "success": true,
+  "category": "Asian",
   "restaurants" [
       {
           "name": "Foo Foods",

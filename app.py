@@ -42,7 +42,6 @@ def get_resto_by_cat(cat_id):
 
 @app.route("/api/restaurants", methods=['GET'])
 def get_resto():
-    # TODO: search by keyword
     restaurants = Restaurant.query.all()
 
     return jsonify({
@@ -56,24 +55,28 @@ def get_resto():
 def add_resto():
     data = request.json
 
-    resto = Restaurant(
-        name=data['name'],
-        address=data['address'],
-        visited=data.get('visited', False),
-        account_id=1  # TODO: update once user accounts are implemented
-    )
-    for cat in data['categories']:
-        resto.categories.append(Category.query.filter_by(name=cat).first())
+    if 'search_term' in data:
+        restaurants = Restaurant.query.filter(
+            Restaurant.name.ilike(f"%{data['search_term']}%")).all()
+    else:
+        resto = Restaurant(
+            name=data['name'],
+            address=data['address'],
+            visited=data.get('visited', False),
+            account_id=1  # TODO: update once user accounts are implemented
+        )
+        for cat in data['categories']:
+            resto.categories.append(Category.query.filter_by(name=cat).first())
 
-    if 'date_visited' in data:
-        visit_date = parse_date(data['date_visited'])
-        resto.date_visited = visit_date
-        resto.visited = True if visit_date else False
+        if 'date_visited' in data:
+            visit_date = parse_date(data['date_visited'])
+            resto.date_visited = visit_date
+            resto.visited = True if visit_date else False
 
-    db.session.add(resto)
-    db.session.commit()
+        db.session.add(resto)
+        db.session.commit()
 
-    restaurants = Restaurant.query.all()
+        restaurants = Restaurant.query.all()
 
     return jsonify({
         'success': True,
