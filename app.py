@@ -1,4 +1,5 @@
 import os
+from random import choice
 
 from flask import Flask, jsonify, request
 from flask_migrate import Migrate
@@ -40,6 +41,7 @@ def get_resto_by_cat(cat_id):
 
 @app.route("/api/restaurants", methods=['GET'])
 def get_resto():
+    # TODO: search by keyword
     restaurants = Restaurant.query.all()
 
     return jsonify({
@@ -82,7 +84,8 @@ def edit_resto(resto_id):
     resto.name = data.get('name', resto.name)
     resto.address = data.get('address', resto.address)
     resto.visited = data.get('visited', resto.visited)
-    resto.date_visited = data.get('date_visited', resto.date_visited) # TODO: figure out how this works
+    # TODO: figure out how this works
+    resto.date_visited = data.get('date_visited', resto.date_visited)
 
     if 'categories' in data:
         resto.categories = []
@@ -117,6 +120,23 @@ def delete_resto(resto_id):
 
 @app.route("/api/random", methods=['POST'])
 def rando_resto():
+    data = request.json
+
+    if data:
+        restaurants = db.session.query(Restaurant)
+        if 'category' in data:
+            restaurants = restaurants.filter(
+                Restaurant.categories.any(Category.name.in_([data['category']])))
+        if 'visited' in data:
+            restaurants = restaurants.filter(
+                Restaurant.visited == data['visited'])
+
+        restaurants = restaurants.all()
+
+    else:
+        restaurants = Restaurant.query.all()
+
     return jsonify({
-        'success': True
+        'success': True,
+        'restaurants': [choice(restaurants).out()] if restaurants else None
     })

@@ -221,14 +221,14 @@ Get a random restaurant from the database. Results can be restricted by category
 curl -X POST URL/api/restaurants \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
-    --data '{"category": ["Asian", "Fast Food"],"visited": true}'
+    --data '{"category": "Asian","visited": true}'
 ```
 
 ###### Parameters
 
 ```json
 {
-  "category": ["Asian"]
+  "category": "Asian"
 }
 ```
 
