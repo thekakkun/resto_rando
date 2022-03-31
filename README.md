@@ -29,7 +29,7 @@ The the full list of restaurants.
 
 ##### Example
 
-```
+```bash
 curl -X Get URL/api/restaurants \
     --header "Authorization: Bearer {access token}"
 ```
@@ -57,7 +57,7 @@ Get the list of restaurants belonging to a category.
 
 ##### Example
 
-```
+```bash
 curl -X Get URL/api/categories/0/restaurants \
     --header "Authorization: Bearer {access token}"
 ```
@@ -85,7 +85,7 @@ Add a new restaurant to the database.
 
 ##### Example
 
-```
+```bash
 curl -X POST URL/api/restaurants \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
@@ -107,6 +107,10 @@ curl -X POST URL/api/restaurants \
 - address\* (string): Restaurant location
 - category\* (list): Caterogies that match the restaurant
 - visited (boolean): Whether this restaurant has been visited
+- date_visited (string): Date visited.
+  - `"YYYY-MM-DD"`: Set date visited, uses ISO 8601 style formatting. Automatically sets `visited` to `true`.
+  - `"today"`: Set date visited to today. Automatically sets `visited` to `true`.
+  - `null`: Clears date visited.
 
 ##### Returns
 
@@ -137,18 +141,19 @@ Edit a restaurant in the database.
 
 ##### Example
 
-```
+```bash
 curl -X PATCH URL/api/restaurants/2 \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
-    --data '{"visited": true}'
+    --data '{"visited": true, "date_visited": "2020-03-14"}'
 ```
 
 ###### Parameters
 
 ```json
 {
-  "visited": true
+  "visited": true,
+  "date_visited": "2020-03-14"
 }
 ```
 
@@ -156,6 +161,10 @@ curl -X PATCH URL/api/restaurants/2 \
 - address (string): Restaurant location
 - category (list): Caterogies that match the restaurant
 - visited (boolean): Whether this restaurant has been visited
+- date_visited (string): Date visited.
+  - `"YYYY-MM-DD"`: Set date visited, uses ISO 8601 style formatting. Automatically sets `visited` to `true`.
+  - `"today"`: Set date visited to today. Automatically sets `visited` to `true`.
+  - `null`: Clears date visited.
 
 ##### Returns
 
@@ -186,7 +195,7 @@ Delete a restaurant in the dtabase.
 
 ##### Example
 
-```
+```bash
 curl -X DELETE URL/api/restaurants/{0} \
     --header "Authorization: Bearer {access token}"
 ```
@@ -217,7 +226,7 @@ Get a random restaurant from the database. Results can be restricted by category
 
 ##### Example
 
-```
+```bash
 curl -X POST URL/api/restaurants \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \

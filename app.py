@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from random import choice
 
 from flask import Flask, jsonify, request
@@ -64,6 +65,11 @@ def add_resto():
     for cat in data['categories']:
         resto.categories.append(Category.query.filter_by(name=cat).first())
 
+    if 'date_visited' in data:
+        visit_date = parse_date(data['date_visited'])
+        resto.date_visited = visit_date
+        resto.visited = True if visit_date else False
+
     db.session.add(resto)
     db.session.commit()
 
@@ -84,13 +90,16 @@ def edit_resto(resto_id):
     resto.name = data.get('name', resto.name)
     resto.address = data.get('address', resto.address)
     resto.visited = data.get('visited', resto.visited)
-    # TODO: figure out how this works
-    resto.date_visited = data.get('date_visited', resto.date_visited)
 
     if 'categories' in data:
         resto.categories = []
         for cat in data['categories']:
             resto.categories.append(Category.query.filter_by(name=cat).first())
+
+    if 'date_visited' in data:
+        visit_date = parse_date(data['date_visited'])
+        resto.date_visited = visit_date
+        resto.visited = True if visit_date else False
 
     db.session.commit()
 
@@ -140,3 +149,12 @@ def rando_resto():
         'success': True,
         'restaurants': [choice(restaurants).out()] if restaurants else None
     })
+
+
+def parse_date(date_str):
+    if not date_str:
+        return None
+    elif date_str == 'today':
+        return datetime.today()
+    else:
+        return datetime.fromisoformat(date_str)
