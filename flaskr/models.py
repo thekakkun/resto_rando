@@ -2,6 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+# TODO: Create methods for common actions (add, delete, etc.)
+
 
 class Account(db.Model):
     __tablename__ = 'account'

@@ -1,22 +1,12 @@
-import json
-import os
 from datetime import datetime
 from random import choice
 
-from flask import Flask, abort, jsonify, request
-from flask_migrate import Migrate
+from flask import Blueprint, abort, jsonify, request
 
-from models import Account, Category, Restaurant, db
+from flaskr.models import Account, Category, Restaurant, db
 
-DB_USER = os.environ.get('DB_USER')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
+bp = Blueprint('api', __name__, url_prefix='/api')
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/resto_rando'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
-
-migrate = Migrate(app, db)
 
 # TODO: pagination
 # TODO: unit testing
@@ -31,7 +21,7 @@ def parse_date(date_str):
         return datetime.fromisoformat(date_str)
 
 
-@app.route("/api/categories", methods=['GET'])
+@bp.route("/categories", methods=['GET'])
 def get_categories():
     try:
         categories = Category.query.all()
@@ -44,7 +34,7 @@ def get_categories():
     }), 200
 
 
-@app.route("/api/<int:cat_id>/restaurants", methods=['GET'])
+@bp.route("/<int:cat_id>/restaurants", methods=['GET'])
 def get_resto_by_cat(cat_id):
     try:
         cat = Category.query.get(cat_id)
@@ -52,7 +42,7 @@ def get_resto_by_cat(cat_id):
             abort(404)
 
     except Exception as e:
-        abort(err.code) if e.code else abort(422)
+        abort(e.code) if e.code else abort(422)
 
     return jsonify({
         'success': True,
@@ -61,7 +51,7 @@ def get_resto_by_cat(cat_id):
     }), 200
 
 
-@app.route("/api/restaurants", methods=['GET'])
+@bp.route("/restaurants", methods=['GET'])
 def get_resto():
     try:
         restaurants = Restaurant.query.all()
@@ -75,7 +65,7 @@ def get_resto():
     }), 200
 
 
-@app.route("/api/restaurants", methods=['POST'])
+@bp.route("/restaurants", methods=['POST'])
 def add_resto():
     try:
         data = request.json
@@ -113,7 +103,7 @@ def add_resto():
     }), 200
 
 
-@app.route("/api/restaurants/<int:resto_id>", methods=['PATCH'])
+@bp.route("/restaurants/<int:resto_id>", methods=['PATCH'])
 def edit_resto(resto_id):
     try:
         data = request.json
@@ -142,7 +132,7 @@ def edit_resto(resto_id):
         restaurants = Restaurant.query.all()
 
     except Exception as e:
-        abort(err.code) if e.code else abort(422)
+        abort(e.code) if e.code else abort(422)
 
     return jsonify({
         'success': True,
@@ -151,7 +141,7 @@ def edit_resto(resto_id):
     }), 200
 
 
-@app.route("/api/restaurants/<int:resto_id>", methods=['DELETE'])
+@bp.route("/restaurants/<int:resto_id>", methods=['DELETE'])
 def delete_resto(resto_id):
     try:
         resto = Restaurant.query.get(resto_id)
@@ -163,7 +153,7 @@ def delete_resto(resto_id):
         restaurants = Restaurant.query.all()
 
     except Exception as e:
-        abort(err.code) if e.code else abort(422)
+        abort(e.code) if e.code else abort(422)
 
     return jsonify({
         'success': True,
@@ -172,7 +162,7 @@ def delete_resto(resto_id):
     }), 200
 
 
-@app.route("/api/random", methods=['POST'])
+@bp.route("/random", methods=['POST'])
 def rando_resto():
     try:
         data = request.json
@@ -199,7 +189,7 @@ def rando_resto():
     }), 200
 
 
-@app.errorhandler(404)
+@bp.errorhandler(404)
 def not_found(e):
     return jsonify({
         'success': False,
@@ -208,7 +198,7 @@ def not_found(e):
     }), 404
 
 
-@app.errorhandler(422)
+@bp.errorhandler(422)
 def unprocessable(e):
     return jsonify({
         'success': False,
