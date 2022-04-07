@@ -1,43 +1,49 @@
-import json
-import os
 import unittest
 
-from flask_sqlalchemy import SQLAlchemy
-
-from flaskr.api import app
-from flaskr.models import Account, Category, Restaurant, db
+from flaskr import create_app
+from flaskr.models import Account, Category, Restaurant, db, insert_dummy_data
 
 
 class RestoRandoTest(unittest.TestCase):
 
     def setUp(self):
-        self.DB_USER = os.environ.get('DB_USER')
-        self.DB_PASSWORD = os.environ.get('DB_PASSWORD')
-        self.DB_NAME = 'resto_rando_test'
-        self.database_path = f'postgresql://{self.DB_USER}:{self.DB_PASSWORD}@localhost:5432/{self.DB_NAME}'
+        self.app = create_app(test_config=True)
+        self.client = self.app.test_client
 
-        app.config['SQLALCHEMY_DATABASE_URI'] = self.database_path
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-        self.app = app
-        db.init_app(self.app)
-
-        # self.app = app.test_client()
-        # db.init_app(self.app)
-        db.drop_all()
-        db.create_all()
-
-        # with self.app.app_context():
-        #     self.db = SQLAlchemy()
-        #     self.db.init_app(self.app)
-        #     self.db.create_all()
+        with self.app.app_context():
+            db.create_all()
+            insert_dummy_data()
 
     def tearDown(self):
-        pass
+        with self.app.app_context():
+            db.drop_all()
 
     def test_get_categories(self):
-        res = self.app.get('/categories')
-        data = json.loads(res.data)
+        res = self.client().get('api/categories')
+        data = res.json
         self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertEqual(len(data['categories']), 84)
+
+    def test_post_categories(self):
+        res = self.client().post('api/categories',
+                                 json={'name': 'Chinese American'})
+        data = res.json
+        self.assertEqual(res.status_code, 405)
+        self.assertFalse(data['success'])
+
+    def test_resto_by_cat(self):
+        res = self.client().get('api/1/restaurants')
+        data = res.json
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['restaurants'])
+
+    def test_nonexistant_cat(self):
+        res = self.client().get('api/99999/restaurants')
+        data = res.json
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
 
 
 if __name__ == '__main__':

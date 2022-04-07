@@ -48,3 +48,43 @@ class Category(db.Model):
     __tablename__ = 'category'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
+
+
+def populate_cat():
+    with open('categories.csv', 'r') as f:
+        cats = f.read().split('\n')
+        for cat_name in cats:
+            db.session.add(Category(name=cat_name))
+        db.session.commit()
+
+
+def insert_dummy_data():
+    populate_cat()
+
+    db.session.add(Account(id=1, name='test_admin'))
+    db.session.add(Account(id=2, name='test_user'))
+
+    db.session.commit()
+
+    db.session.add(Restaurant(
+        name='Best Restaurant',
+        address='123 Main Street, New York, NY',
+        categories=[
+            Category.query.filter_by(name='African').first(),
+            Category.query.filter_by(name='Vegan').first()
+        ],
+        visited=True,
+        account_id=1
+    ))
+    db.session.add(Restaurant(
+        name='Foo Foods',
+        address='123 Pacific Drive, Los Angeles, CA',
+        categories=[
+            Category.query.filter_by(name='Asian').first(),
+            Category.query.filter_by(name='Fast Food').first()
+        ],
+        visited=False,
+        account_id=1
+    ))
+
+    db.session.commit()

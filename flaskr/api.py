@@ -187,21 +187,3 @@ def rando_resto():
         'success': True,
         'restaurants': [choice(restaurants).out()] if restaurants else None
     }), 200
-
-
-@bp.errorhandler(404)
-def not_found(e):
-    return jsonify({
-        'success': False,
-        'error': 404,
-        'message': 'The server can not find the requested resource.'
-    }), 404
-
-
-@bp.errorhandler(422)
-def unprocessable(e):
-    return jsonify({
-        'success': False,
-        'error': 422,
-        'message': 'The request was well-formed but was unable to be followed due to semantic errors.'
-    }), 422
