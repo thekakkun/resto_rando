@@ -11,7 +11,8 @@
             "module": "flask",
             "env": {
                 "FLASK_APP": "flaskr",
-                "FLASK_ENV": "development"
+                "FLASK_ENV": "development",
+                "DATABASE_URI": "postgres://doalqurujswkdo:43c3b3886e1d86d23950c4f43b2ee6b481fe295e8fff94ce5e197f94ea36997a@ec2-52-73-155-171.compute-1.amazonaws.com:5432/d3mmt4bav20v4f"
             },
             "args": [
                 "run",

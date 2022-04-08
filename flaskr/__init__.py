@@ -1,7 +1,6 @@
 import os
 
 from flask import Flask, jsonify
-from flask_migrate import Migrate
 
 from flaskr import api
 from flaskr.auth import AuthError
@@ -9,6 +8,7 @@ from flaskr.models import db
 
 DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 
 def create_app(test_config=None):
@@ -16,7 +16,8 @@ def create_app(test_config=None):
 
     if test_config is None:
         DB_NAME = 'resto_rando'
-        app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}'
+        # app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}'
+        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     else:
         DB_NAME = 'resto_rando_test'
@@ -33,7 +34,6 @@ def create_app(test_config=None):
         return 'Hello, World!'
 
     db.init_app(app)
-    migrate = Migrate(app, db)
 
     app.register_blueprint(api.bp)
 
