@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from flask_migrate import Migrate
 
 from flaskr import api
+from flaskr.auth import AuthError
 from flaskr.models import db
 
 DB_USER = os.environ.get('DB_USER')
@@ -58,6 +59,14 @@ def create_app(test_config=None):
             'error': 422,
             'message': 'The request was well-formed but was unable to be followed due to semantic errors.'
         }), 422
+
+    @app.errorhandler(AuthError)
+    def auth_error(e):
+        return jsonify({
+            'success': False,
+            'error': e.status_code,
+            'message': e.error['description']
+        }, e.status_code)
 
     return app
 

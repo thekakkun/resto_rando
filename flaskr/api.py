@@ -3,6 +3,7 @@ from random import choice
 
 from flask import Blueprint, abort, jsonify, request
 
+from flaskr.auth import AuthError, requires_auth
 from flaskr.models import Account, Category, Restaurant, db
 
 bp = Blueprint('api', __name__, url_prefix='/api')
