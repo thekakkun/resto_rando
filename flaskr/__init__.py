@@ -33,6 +33,7 @@ def create_app(test_config=None):
         return 'Hello, World!'
 
     db.init_app(app)
+    migrate = Migrate(app, db)
 
     app.register_blueprint(api.bp)
 
@@ -74,7 +75,7 @@ def create_app(test_config=None):
 def setup_database(app):
     with app.app_context():
         db.create_all()
-    migrate = Migrate(app, db)
+    
 
 
 if __name__ == '__main__':
