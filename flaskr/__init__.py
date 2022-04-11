@@ -9,6 +9,8 @@ from flaskr.models import db, migrate
 DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
 DATABASE_URL = os.environ.get('DATABASE_URL', None)
+if DATABASE_URL.startswith('postgres://'):
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
 
 def create_app(test_config=None):
@@ -20,9 +22,6 @@ def create_app(test_config=None):
         if not DATABASE_URL:
             app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}'
         else:
-            if DATABASE_URL.startswith('postgres://'):
-                DATABASE_URL = DATABASE_URL.replace(
-                    "postgres://", "postgresql://", 1)
             app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     else:
