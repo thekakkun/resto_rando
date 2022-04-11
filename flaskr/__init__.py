@@ -16,10 +16,13 @@ def create_app(test_config=None):
 
     if test_config is None:
         DB_NAME = 'resto_rando'
-        
+
         if not DATABASE_URL:
             app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}'
         else:
+            if DATABASE_URL.startswith('postgres://'):
+                DATABASE_URL = DATABASE_URL.replace(
+                    "postgres://", "postgresql://", 1)
             app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     else:
