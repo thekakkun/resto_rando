@@ -78,6 +78,9 @@ def create_app(test_config=None):
     return app
 
 
+app = create_app
+
+
 def setup_database(app):
     with app.app_context():
         db.create_all()
