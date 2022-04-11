@@ -9,7 +9,7 @@ from flaskr.models import db, migrate
 DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
 DATABASE_URL = os.environ.get('DATABASE_URL', None)
-if DATABASE_URL.startswith('postgres://'):
+if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
 
@@ -76,9 +76,6 @@ def create_app(test_config=None):
         }, e.status_code)
 
     return app
-
-
-app = create_app
 
 
 def setup_database(app):

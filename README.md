@@ -10,7 +10,7 @@ Get the list of categories.
 
 ##### Example
 
-`curl -X Get URL/api/categories`
+`curl -X GET https://resto-rando.herokuapp.com/api/categories`
 
 ##### Returns
 
@@ -30,7 +30,7 @@ The the full list of restaurants.
 ##### Example
 
 ```bash
-curl -X Get URL/api/restaurants \
+curl -X GET https://resto-rando.herokuapp.com/api/restaurants \
     --header "Authorization: Bearer {access token}"
 ```
 
@@ -58,7 +58,7 @@ Find a restaurant by keyword.
 ##### Example
 
 ```bash
-curl -X POST URL/api/restaurants \
+curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
     --data '{"search_term": "Best"}'
@@ -98,7 +98,7 @@ Get the list of restaurants belonging to a category.
 ##### Example
 
 ```bash
-curl -X Get URL/api/categories/0/restaurants \
+curl -X Get https://resto-rando.herokuapp.com/api/categories/0/restaurants \
     --header "Authorization: Bearer {access token}"
 ```
 
@@ -126,7 +126,7 @@ Add a new restaurant to the database.
 ##### Example
 
 ```bash
-curl -X POST URL/api/restaurants \
+curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
     --data '{"name":"Foo Foods","address":"123 Pacific Drive, Los Angeles, CA","categories":["Asian", "Fast Food"],"visited":false}'
@@ -182,7 +182,7 @@ Edit a restaurant in the database.
 ##### Example
 
 ```bash
-curl -X PATCH URL/api/restaurants/2 \
+curl -X PATCH https://resto-rando.herokuapp.com/api/restaurants/2 \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
     --data '{"visited": true, "date_visited": "2020-03-14"}'
@@ -236,7 +236,7 @@ Delete a restaurant in the dtabase.
 ##### Example
 
 ```bash
-curl -X DELETE URL/api/restaurants/{0} \
+curl -X DELETE https://resto-rando.herokuapp.com/api/restaurants/{0} \
     --header "Authorization: Bearer {access token}"
 ```
 
@@ -264,7 +264,7 @@ Get a random restaurant from the database. Results can be restricted by category
 ##### Example
 
 ```bash
-curl -X POST URL/api/restaurants \
+curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
     --header "Authorization: Bearer {access token}" \
     --header "Content-Type: application/json" \
     --data '{"category": "Asian","visited": true}'

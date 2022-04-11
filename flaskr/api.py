@@ -67,35 +67,57 @@ def get_resto():
 
 
 @bp.route("/restaurants", methods=['POST'])
-def add_resto():
+@requires_auth('post:resto')
+def post_resto(payload):
     try:
         data = request.json
-
         if 'search_term' in data:
-            restaurants = Restaurant.query.filter(
-                Restaurant.name.ilike(f"%{data['search_term']}%")).all()
+            return search_resto(data)
         else:
-            resto = Restaurant(
-                name=data['name'],
-                address=data['address'],
-                visited=data.get('visited', False),
-                account_id=1  # TODO: update once user accounts are implemented
-            )
-            for cat in data['categories']:
-                resto.categories.append(
-                    Category.query.filter_by(name=cat).first())
+            return add_resto(data, payload)
 
-            if 'date_visited' in data:
-                visit_date = parse_date(data['date_visited'])
-                resto.date_visited = visit_date
-                resto.visited = True if visit_date else False
-
-            db.session.add(resto)
-            db.session.commit()
-
-            restaurants = Restaurant.query.all()
     except:
         abort(422)
+
+
+def search_resto(data):
+    restaurants = Restaurant.query.filter(
+        Restaurant.name.ilike(f"%{data['search_term']}%")).all()
+
+    return jsonify({
+        'success': True,
+        'category': None,
+        'restaurants': [resto.out() for resto in restaurants]
+    }), 200
+
+
+def add_resto(data, payload):
+    subject = payload['sub']
+
+    user = Account.query.filter_by(name=subject).first()
+    if not user:
+        db.session.add(Account(name=subject))
+        db.session.commit()
+
+    resto = Restaurant(
+        name=data['name'],
+        address=data['address'],
+        visited=data.get('visited', False),
+        account_id=Account.query.filter_by(name=subject).first().id
+    )
+    for cat in data['categories']:
+        resto.categories.append(
+            Category.query.filter_by(name=cat).first())
+
+    if 'date_visited' in data:
+        visit_date = parse_date(data['date_visited'])
+        resto.date_visited = visit_date
+        resto.visited = True if visit_date else False
+
+    db.session.add(resto)
+    db.session.commit()
+
+    restaurants = Restaurant.query.all()
 
     return jsonify({
         'success': True,

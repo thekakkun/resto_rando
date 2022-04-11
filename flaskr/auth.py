@@ -76,7 +76,12 @@ def verify_decode_jwt(token):
     try:
         signing_key = jwks_client.get_signing_key_from_jwt(token)
         data = jwt.decode(
-            token, signing_key.key, algorithms=ALGORITHMS, options={'require': ['exp', 'iss', 'aud']}, audience=API_AUDIENCE, issuer=f'https://{AUTH0_DOMAIN}/'
+            token,
+            signing_key.key,
+            algorithms=ALGORITHMS,
+            options={'require': ['exp', 'iss', 'aud']},
+            audience=API_AUDIENCE,
+            issuer=f'https://{AUTH0_DOMAIN}/'
         )
         return data
 
