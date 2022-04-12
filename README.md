@@ -1,18 +1,42 @@
 # Resto Rando
 
+This is the capstone project completed for [Udacity's Full Stack Web Developer Nanodegree Program](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd0044).
+
 ## API Documentation
+
+### Error Handling
+
+Erros are returned in the following format:
+
+```json
+{
+  "succcess": false,
+  "error": 404,
+  "message": "The server cannot find the requested resource."
+}
+```
+
+Some common errors:
+
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not found
+- 405: Method not allowed
+- 422: Request unprocessable
 
 ### Endpoints
 
-#### `GET /api/categories`
+#### Categories
+
+##### `GET /api/categories`
 
 Get the list of categories.
 
-##### Example
+###### Example requests
 
 `curl -X GET https://resto-rando.herokuapp.com/api/categories`
 
-##### Returns
+###### Example responses
 
 ```json
 {
@@ -23,277 +47,253 @@ Get the list of categories.
 }
 ```
 
-#### `GET /api/restaurants`
+#### Restaurants
 
-The the full list of restaurants.
+##### `GET /api/restaurants`
 
-##### Example
+The the list of restaurants.
+
+###### Example requests
 
 ```bash
 curl -X GET https://resto-rando.herokuapp.com/api/restaurants \
-    --header "Authorization: Bearer {access token}"
+    --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
-##### Returns
+###### Example responses
 
 ```json
 {
   "success": true,
   "category": null,
   "restaurants" [
-      {
-          "name": "Best Restaurant",
-          "address": "123 Main Street, New York, NY",
-          "categories": ["African", "Vegan"],
-          "visited": true
-      },
+    {
+      "name": "Best Restaurant",
+      "address": "123 Main Street, New York, NY",
+      "categories": ["African", "Vegan"],
+      "visited": true
+    },
   ]
 }
 ```
 
-#### `POST /api/restaurant/`
-
-Find a restaurant by keyword.
-
-##### Example
-
-```bash
-curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
-    --header "Authorization: Bearer {access token}" \
-    --header "Content-Type: application/json" \
-    --data '{"search_term": "Best"}'
-```
-
-###### Parameters
-
-```json
-{
-  "search_term": "Best"
-}
-```
-
-- search_term (string): Keyword to search for. Case insensitive.
-
-##### Returns
-
-```json
-{
-  "success": true,
-  "category": "Asian",
-  "restaurants" [
-      {
-          "name": "Best Restaurant",
-          "address": "123 Main Street, New York, NY",
-          "categories": ["African", "Vegan"],
-          "visited": true
-      },
-  ]
-}
-```
-
-#### `GET /api/categories/{category_id}/restaurants`
-
-Get the list of restaurants belonging to a category.
-
-##### Example
-
-```bash
-curl -X Get https://resto-rando.herokuapp.com/api/categories/0/restaurants \
-    --header "Authorization: Bearer {access token}"
-```
-
-##### Returns
-
-```json
-{
-  "success": true,
-  "category": "African",
-  "restaurants" [
-      {
-          "name": "Best Restaurant",
-          "address": "123 Main Street, New York, NY",
-          "categories": ["African", "Vegan"],
-          "visited": true
-      },
-  ]
-}
-```
-
-#### `POST /api/restaurants`
+##### `POST /api/restaurants`
 
 Add a new restaurant to the database.
 
-##### Example
-
-```bash
-curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
-    --header "Authorization: Bearer {access token}" \
-    --header "Content-Type: application/json" \
-    --data '{"name":"Foo Foods","address":"123 Pacific Drive, Los Angeles, CA","categories":["Asian", "Fast Food"],"visited":false}'
-```
-
 ###### Parameters
-
-```json
-{
-  "name": "Foo Foods",
-  "address": "123 Pacific Drive, Los Angeles, CA",
-  "categories": ["Asian", "Fast Food"],
-  "visited": false
-}
-```
 
 - name\* (string): Name of the restaurant
 - address\* (string): Restaurant location
 - category\* (list): Caterogies that match the restaurant
 - visited (boolean): Whether this restaurant has been visited
 - date_visited (string): Date visited.
-  - `"YYYY-MM-DD"`: Set date visited, uses ISO 8601 style formatting. Automatically sets `visited` to `true`.
-  - `"today"`: Set date visited to today. Automatically sets `visited` to `true`.
-  - `null`: Clears date visited.
+  - `YYYY-MM-DD`: Set date visited, uses ISO 8601 style formatting. Automatically sets `visited` to `true`.
+  - `today`: Set date visited to today. Automatically sets `visited` to `true`.
+  - `null`: Clears date visited. `visited` value kept as is.
 
-##### Returns
+###### Example requests
+
+```bash
+curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
+    --header "Authorization: Bearer $ACCESS_TOKEN" \
+    --header "Content-Type: application/json" \
+    --data '{"name":"Foo Foods","address":"123 Pacific Drive, Los Angeles, CA","categories":["Asian", "Fast Food"],"visited":false}'
+```
+
+###### Example responses
 
 ```json
 {
   "success": true,
   "category": null,
   "restaurants" [
-      {
-          "name": "Best Restaurant",
-          "address": "123 Main Street, New York, NY",
-          "categories": ["African", "Vegan"],
-          "visited": true
-      },
-      {
-          "name": "Foo Foods",
-          "address": "123 Pacific Drive, Los Angeles, CA",
-          "categories": ["Asian", "Fast Food"],
-          "visited": false
-      },
+    {
+      "name": "Best Restaurant",
+      "address": "123 Main Street, New York, NY",
+      "categories": ["African", "Vegan"],
+      "visited": true
+    },
+    {
+      "name": "Foo Foods",
+      "address": "123 Pacific Drive, Los Angeles, CA",
+      "categories": ["Asian", "Fast Food"],
+      "visited": false
+    },
   ]
 }
 ```
 
-#### `PATCH /api/restaurants/{restaurant_id}`
+##### `PATCH /api/restaurants/{restaurant_id}`
 
 Edit a restaurant in the database.
 
-##### Example
-
-```bash
-curl -X PATCH https://resto-rando.herokuapp.com/api/restaurants/2 \
-    --header "Authorization: Bearer {access token}" \
-    --header "Content-Type: application/json" \
-    --data '{"visited": true, "date_visited": "2020-03-14"}'
-```
-
 ###### Parameters
-
-```json
-{
-  "visited": true,
-  "date_visited": "2020-03-14"
-}
-```
 
 - name (string): Name of the restaurant
 - address (string): Restaurant location
 - category (list): Caterogies that match the restaurant
 - visited (boolean): Whether this restaurant has been visited
 - date_visited (string): Date visited.
-  - `"YYYY-MM-DD"`: Set date visited, uses ISO 8601 style formatting. Automatically sets `visited` to `true`.
-  - `"today"`: Set date visited to today. Automatically sets `visited` to `true`.
-  - `null`: Clears date visited.
+  - `YYYY-MM-DD`: Set date visited, uses ISO 8601 style formatting. Automatically sets `visited` to `true`.
+  - `today`: Set date visited to today. Automatically sets `visited` to `true`.
+  - `null`: Clears date visited. `visited` value kept as is.
 
-##### Returns
+###### Example requests
+
+```bash
+curl -X PATCH https://resto-rando.herokuapp.com/api/restaurants/2 \
+    --header "Authorization: Bearer $ACCESS_TOKEN" \
+    --header "Content-Type: application/json" \
+    --data '{"visited": true, "date_visited": "2020-03-14"}'
+```
+
+###### Example responses
 
 ```json
 {
   "success": true,
   "category": null,
   "restaurants" [
-      {
-          "name": "Best Restaurant",
-          "address": "123 Main Street, New York, NY",
-          "categories": ["African", "Vegan"],
-          "visited": true
-      },
-      {
-          "name": "Foo Foods",
-          "address": "123 Pacific Drive, Los Angeles, CA",
-          "categories": ["Asian", "Fast Food"],
-          "visited": true
-      },
+    {
+      "name": "Best Restaurant",
+      "address": "123 Main Street, New York, NY",
+      "categories": ["African", "Vegan"],
+      "visited": true
+    },
+    {
+      "name": "Foo Foods",
+      "address": "123 Pacific Drive, Los Angeles, CA",
+      "categories": ["Asian", "Fast Food"],
+      "visited": true
+    },
   ]
 }
 ```
 
-#### `DELETE /api/restaurants/{restaurant_id}`
+##### `DELETE /api/restaurants/{restaurant_id}`
 
 Delete a restaurant in the dtabase.
 
-##### Example
+###### Example requests
 
 ```bash
 curl -X DELETE https://resto-rando.herokuapp.com/api/restaurants/{0} \
-    --header "Authorization: Bearer {access token}"
+    --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
-##### Returns
+###### Example responses
 
 ```json
 {
   "success": true,
   "category": null,
   "restaurants" [
-      {
-          "name": "Best Restaurant",
-          "address": "123 Main Street, New York, NY",
-          "categories": ["African", "Vegan"],
-          "visited": true
-      },
+    {
+      "name": "Best Restaurant",
+      "address": "123 Main Street, New York, NY",
+      "categories": ["African", "Vegan"],
+      "visited": true
+    },
   ]
 }
 ```
 
-#### `POST /api/random/`
+#### Finding Restaurants
 
-Get a random restaurant from the database. Results can be restricted by category and visited status.
+##### `POST /api/restaurant/`
 
-##### Example
-
-```bash
-curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
-    --header "Authorization: Bearer {access token}" \
-    --header "Content-Type: application/json" \
-    --data '{"category": "Asian","visited": true}'
-```
+Find a restaurant by keyword.
 
 ###### Parameters
 
-```json
-{
-  "category": "Asian"
-}
+- search_term (string): Keyword to search for. Case insensitive.
+
+###### Example requests
+
+```bash
+curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
+    --header "Authorization: Bearer $ACCESS_TOKEN" \
+    --header "Content-Type: application/json" \
+    --data '{"search_term": "Best"}'
 ```
 
-- category (list): Select random restaurant from category
-- visited (boolean): Filter restaurant by visited status
-
-##### Returns
+###### Example responses
 
 ```json
 {
   "success": true,
   "category": "Asian",
   "restaurants" [
-      {
-          "name": "Foo Foods",
-          "address": "123 Pacific Drive, Los Angeles, CA",
-          "categories": ["Asian", "Fast Food"],
-          "visited": true
-      }
+    {
+      "name": "Best Restaurant",
+      "address": "123 Main Street, New York, NY",
+      "categories": ["African", "Vegan"],
+      "visited": true
+    },
+  ]
+}
+```
+
+##### `GET /api/categories/{category_id}/restaurants`
+
+Get the list of restaurants belonging to a category.
+
+###### Example requests
+
+```bash
+curl -X Get https://resto-rando.herokuapp.com/api/categories/0/restaurants \
+    --header "Authorization: Bearer $ACCESS_TOKEN"
+```
+
+###### Example responses
+
+```json
+{
+  "success": true,
+  "category": "African",
+  "restaurants" [
+    {
+      "name": "Best Restaurant",
+      "address": "123 Main Street, New York, NY",
+      "categories": ["African", "Vegan"],
+      "visited": true
+    },
+  ]
+}
+```
+
+##### `POST /api/random/`
+
+Get a random restaurant from the database. Results can be restricted by category and visited status.
+
+###### Parameters
+
+- category (list): Select random restaurant from category
+- visited (boolean): Filter restaurant by visited status
+
+###### Example requests
+
+```bash
+curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
+    --header "Authorization: Bearer $ACCESS_TOKEN" \
+    --header "Content-Type: application/json" \
+    --data '{"category": "Asian","visited": true}'
+```
+
+###### Example responses
+
+```json
+{
+  "success": true,
+  "category": "Asian",
+  "restaurants" [
+    {
+      "name": "Foo Foods",
+      "address": "123 Pacific Drive, Los Angeles, CA",
+      "categories": ["Asian", "Fast Food"],
+      "visited": true
+    }
   ]
 }
 ```
