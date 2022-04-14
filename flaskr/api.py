@@ -35,7 +35,7 @@ def get_categories():
     }), 200
 
 
-@bp.route("/<int:cat_id>/restaurants", methods=['GET'])
+@bp.route("categories/<int:cat_id>/restaurants", methods=['GET'])
 def get_resto_by_cat(cat_id):
     try:
         cat = Category.query.get(cat_id)
@@ -53,9 +53,26 @@ def get_resto_by_cat(cat_id):
 
 
 @bp.route("/restaurants", methods=['GET'])
-def get_resto():
+@requires_auth('get:my_resto')
+def get_resto(payload):
+
     try:
-        restaurants = Restaurant.query.all()
+        subject = payload['sub']
+        account = Account.query.filter_by(name=subject).one_or_none()
+        user = request.args.get('user', None)
+
+        if not user or int(user) == account.id:
+            restaurants = Restaurant.query.filter_by(account_id=account.id)
+        else:
+            restaurants = get_any_resto(user)
+
+        search_term = request.args.get('q', None)
+        if search_term:
+            restaurants = restaurants.filter(
+                Restaurant.name.ilike(f"%{search_term}%"))
+
+    except AuthError as e:
+        raise e
     except:
         abort(422)
 
@@ -64,6 +81,11 @@ def get_resto():
         'category': None,
         'restaurants': [resto.out() for resto in restaurants]
     }), 200
+
+
+@requires_auth('get:any_resto')
+def get_any_resto(payload, user):
+    return Restaurant.query.filter_by(account_id=int(user))
 
 
 @bp.route("/restaurants", methods=['POST'])
@@ -94,7 +116,7 @@ def search_resto(data):
 def add_resto(data, payload):
     subject = payload['sub']
 
-    user = Account.query.filter_by(name=subject).first()
+    user = Account.query.filter_by(name=subject).one_or_none()
     if not user:
         db.session.add(Account(name=subject))
         db.session.commit()

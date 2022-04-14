@@ -42,7 +42,8 @@ class Restaurant(db.Model):
             'address': self.address,
             'visited': self.visited,
             'date_visited': self.date_visited,
-            'categories': [cat.name for cat in self.categories]
+            'categories': [cat.name for cat in self.categories],
+            'account_id': self.account_id
         }
 
 

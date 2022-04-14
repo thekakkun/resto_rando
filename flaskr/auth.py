@@ -9,9 +9,9 @@ API_AUDIENCE = 'resto'
 
 
 class AuthError(Exception):
-    def __init__(self, error, status_code):
+    def __init__(self, error, code):
         self.error = error
-        self.status_code = status_code
+        self.code = code
 
 
 def get_token_auth_header():

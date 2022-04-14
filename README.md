@@ -73,7 +73,7 @@ The the list of restaurants added by user.
 ###### Example requests
 
 ```bash
-curl -X GET https://resto-rando.herokuapp.com/api/restaurants \
+curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?page=1" \
     --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 

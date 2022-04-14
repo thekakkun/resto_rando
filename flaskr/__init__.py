@@ -71,9 +71,9 @@ def create_app(test_config=None):
     def auth_error(e):
         return jsonify({
             'success': False,
-            'error': e.status_code,
+            'error': e.code,
             'message': e.error['description']
-        }, e.status_code)
+        }, e.code)
 
     return app
 
