@@ -6,11 +6,17 @@ from flask import Blueprint, abort, jsonify, request
 from flaskr.auth import AuthError, requires_auth
 from flaskr.models import Account, Category, Restaurant, db
 
+ITEMS_PER_PAGE = 10
+
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 
-# TODO: pagination
 # TODO: unit testing
+
+def paginate(restaurants, page):
+    page_start = (page - 1) * ITEMS_PER_PAGE
+    page_end = page_start + ITEMS_PER_PAGE
+    return restaurants[page_start:page_end]
 
 
 def parse_date(date_str):
@@ -71,6 +77,8 @@ def get_resto(payload):
             restaurants = restaurants.filter(
                 Restaurant.name.ilike(f"%{search_term}%"))
 
+        page = int(request.args.get('page', 1))
+
     except AuthError as e:
         raise e
     except:
@@ -79,7 +87,9 @@ def get_resto(payload):
     return jsonify({
         'success': True,
         'category': None,
-        'restaurants': [resto.out() for resto in restaurants]
+        'count': restaurants.count(),
+        'page': page,
+        'restaurants': [resto.out() for resto in paginate(restaurants, page)]
     }), 200
 
 
@@ -93,53 +103,35 @@ def get_any_resto(payload, user):
 def post_resto(payload):
     try:
         data = request.json
-        if 'search_term' in data:
-            return search_resto(data)
-        else:
-            return add_resto(data, payload)
+        subject = payload['sub']
+
+        user = Account.query.filter_by(name=subject).one_or_none()
+        if not user:
+            db.session.add(Account(name=subject))
+            db.session.commit()
+
+        resto = Restaurant(
+            name=data['name'],
+            address=data['address'],
+            visited=data.get('visited', False),
+            account_id=Account.query.filter_by(name=subject).first().id
+        )
+        for cat in data['categories']:
+            resto.categories.append(
+                Category.query.filter_by(name=cat).first())
+
+        if 'date_visited' in data:
+            visit_date = parse_date(data['date_visited'])
+            resto.date_visited = visit_date
+            resto.visited = True if visit_date else False
+
+        db.session.add(resto)
+        db.session.commit()
+
+        restaurants = Restaurant.query.all()
 
     except:
         abort(422)
-
-
-def search_resto(data):
-    restaurants = Restaurant.query.filter(
-        Restaurant.name.ilike(f"%{data['search_term']}%")).all()
-
-    return jsonify({
-        'success': True,
-        'category': None,
-        'restaurants': [resto.out() for resto in restaurants]
-    }), 200
-
-
-def add_resto(data, payload):
-    subject = payload['sub']
-
-    user = Account.query.filter_by(name=subject).one_or_none()
-    if not user:
-        db.session.add(Account(name=subject))
-        db.session.commit()
-
-    resto = Restaurant(
-        name=data['name'],
-        address=data['address'],
-        visited=data.get('visited', False),
-        account_id=Account.query.filter_by(name=subject).first().id
-    )
-    for cat in data['categories']:
-        resto.categories.append(
-            Category.query.filter_by(name=cat).first())
-
-    if 'date_visited' in data:
-        visit_date = parse_date(data['date_visited'])
-        resto.date_visited = visit_date
-        resto.visited = True if visit_date else False
-
-    db.session.add(resto)
-    db.session.commit()
-
-    restaurants = Restaurant.query.all()
 
     return jsonify({
         'success': True,
@@ -174,6 +166,7 @@ def edit_resto(resto_id):
 
         db.session.commit()
 
+        # TODO: only by user, probably good to have a generic version of this for all returns
         restaurants = Restaurant.query.all()
 
     except Exception as e:

@@ -83,6 +83,8 @@ curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?page=1" \
 {
   "success": true,
   "category": null,
+  "count": 5,
+  "page": 1,
   "restaurants" [
     {
       "name": "Best Restaurant",
