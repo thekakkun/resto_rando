@@ -46,6 +46,17 @@ class Restaurant(db.Model):
             'account_id': self.account_id
         }
 
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
 
 class Category(db.Model):
     __tablename__ = 'category'

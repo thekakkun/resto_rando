@@ -66,7 +66,9 @@ The the list of restaurants added by user.
 
 ###### Query string parameters
 
-- `user` (int): Show restaurants added by specified user. Defaults to signed-in user if unspecified. Admin role required to see restaurants added by other users.
+- `user` (int): Show restaurants added by specified user. If unspecified returns restaurant list based on user role
+  - Admin: All restaurants, regardless of user.
+  - User: Only restaurants added by user.
 - `page` (int): Results are paginated (10 restaurants per page). Set value to display specified page, or defaults to first page if unspecified.
 - `q` (string): Keyword to search for. Case insensitive.
 

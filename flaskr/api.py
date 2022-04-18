@@ -3,7 +3,7 @@ from random import choice
 
 from flask import Blueprint, abort, jsonify, request
 
-from flaskr.auth import AuthError, requires_auth
+from flaskr.auth import AuthError, requires_auth, check_permission
 from flaskr.models import Account, Category, Restaurant, db
 
 ITEMS_PER_PAGE = 10
@@ -61,21 +61,25 @@ def get_resto_by_cat(cat_id):
 @bp.route("/restaurants", methods=['GET'])
 @requires_auth('get:my_resto')
 def get_resto(payload):
-
     try:
         subject = payload['sub']
         account = Account.query.filter_by(name=subject).one_or_none()
         user = request.args.get('user', None)
 
-        if not user or int(user) == account.id:
-            restaurants = Restaurant.query.filter_by(account_id=account.id)
+        if user:
+            if int(user) == account.id:
+                restaurants = Restaurant.query.filter_by(account_id=account.id)
+            elif check_permission('get:any_resto', payload):
+                restaurants = Restaurant.query.filter_by(account_id=int(user))
         else:
-            restaurants = get_any_resto(user)
+            if check_permission('get:any_resto', payload):
+                restaurants = Restaurant.query
+            else:
+                restaurants = Restaurant.query.filter_by(account_id=account.id)
 
-        search_term = request.args.get('q', None)
-        if search_term:
+        if request.args.get('q', None):
             restaurants = restaurants.filter(
-                Restaurant.name.ilike(f"%{search_term}%"))
+                Restaurant.name.ilike(f"%{request.args['q']}%"))
 
         page = int(request.args.get('page', 1))
 
@@ -93,13 +97,8 @@ def get_resto(payload):
     }), 200
 
 
-@requires_auth('get:any_resto')
-def get_any_resto(payload, user):
-    return Restaurant.query.filter_by(account_id=int(user))
-
-
-@bp.route("/restaurants", methods=['POST'])
-@requires_auth('post:resto')
+@ bp.route("/restaurants", methods=['POST'])
+@ requires_auth('post:resto')
 def post_resto(payload):
     try:
         data = request.json
@@ -125,30 +124,28 @@ def post_resto(payload):
             resto.date_visited = visit_date
             resto.visited = True if visit_date else False
 
-        db.session.add(resto)
-        db.session.commit()
-
-        restaurants = Restaurant.query.all()
+        resto.insert()
 
     except:
         abort(422)
 
-    return jsonify({
-        'success': True,
-        'category': None,
-        'restaurants': [resto.out() for resto in restaurants]
-    }), 200
+    return get_resto()
 
 
-@bp.route("/restaurants/<int:resto_id>", methods=['PATCH'])
-def edit_resto(resto_id):
+@ bp.route("/restaurants/<int:resto_id>", methods=['PATCH'])
+@ requires_auth('patch:my_resto')
+def edit_resto(payload, resto_id):
     try:
-        data = request.json
         resto = Restaurant.query.get(resto_id)
-
         if not resto:
             abort(404)
 
+        subject = payload['sub']
+        account = Account.query.filter_by(name=subject).one_or_none()
+        if resto.account.id != account.id:
+            check_permission('patch:any_resto', payload)
+
+        data = request.json
         resto.name = data.get('name', resto.name)
         resto.address = data.get('address', resto.address)
         resto.visited = data.get('visited', resto.visited)
@@ -164,22 +161,17 @@ def edit_resto(resto_id):
             resto.date_visited = visit_date
             resto.visited = True if visit_date else False
 
-        db.session.commit()
+        resto.update()
 
-        # TODO: only by user, probably good to have a generic version of this for all returns
-        restaurants = Restaurant.query.all()
-
+    except AuthError as e:
+        raise e
     except Exception as e:
         abort(e.code) if e.code else abort(422)
 
-    return jsonify({
-        'success': True,
-        'category': None,
-        'restaurants': [resto.out() for resto in restaurants]
-    }), 200
+    return get_resto()
 
 
-@bp.route("/restaurants/<int:resto_id>", methods=['DELETE'])
+@ bp.route("/restaurants/<int:resto_id>", methods=['DELETE'])
 def delete_resto(resto_id):
     try:
         resto = Restaurant.query.get(resto_id)
@@ -200,7 +192,7 @@ def delete_resto(resto_id):
     }), 200
 
 
-@bp.route("/random", methods=['POST'])
+@ bp.route("/random", methods=['POST'])
 def rando_resto():
     try:
         data = request.json
