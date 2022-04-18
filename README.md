@@ -213,7 +213,7 @@ Delete a restaurant in the database.
 ###### Example requests
 
 ```bash
-curl -X DELETE https://resto-rando.herokuapp.com/api/restaurants/{0} \
+curl -X DELETE https://resto-rando.herokuapp.com/api/restaurants/0 \
     --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
@@ -236,27 +236,25 @@ curl -X DELETE https://resto-rando.herokuapp.com/api/restaurants/{0} \
 
 #### Finding Restaurants
 
-##### `POST /api/random/`
+##### `GET /api/random/?category={}&new`
 
 Get a random restaurant from the database. Results can be restricted by category and visited status.
 
 ###### Permissions required
 
 - `get:my_resto`
-- `get:any_resto`: Needed to get restaurant added by other users.
 
-###### Parameters
+###### Query string parameters
 
-- `category` (list): Filter restaurants by category
-- `visited` (boolean): Filter restaurant by visited status
+- `category` (string): Specify single category. Result must include this category.
+- `new`: If the `new` parameter is provided, only return restaurants not yet visited.
 
 ###### Example requests
 
 ```bash
-curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
-    --header "Authorization: Bearer $ACCESS_TOKEN" \
+curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?category=Asian&new" \
     --header "Content-Type: application/json" \
-    --data '{"category": "Asian","visited": true}'
+    --header "Authorization: Bearer $ACCESS_TOKEN" \
 ```
 
 ###### Example responses

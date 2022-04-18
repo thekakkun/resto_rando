@@ -43,6 +43,7 @@ def get_categories():
 
 @bp.route("categories/<int:cat_id>/restaurants", methods=['GET'])
 def get_resto_by_cat(cat_id):
+    # TODO: Should this be an endpoint or query string paramter?
     try:
         cat = Category.query.get(cat_id)
         if not cat:
@@ -64,13 +65,13 @@ def get_resto(payload):
     try:
         subject = payload['sub']
         account = Account.query.filter_by(name=subject).one_or_none()
-        user = request.args.get('user', None)
+        user = request.args.get('user', default=-1, type=int)
 
         if user:
-            if int(user) == account.id:
+            if user == account.id:
                 restaurants = Restaurant.query.filter_by(account_id=account.id)
             elif check_permission('get:any_resto', payload):
-                restaurants = Restaurant.query.filter_by(account_id=int(user))
+                restaurants = Restaurant.query.filter_by(account_id=user)
         else:
             if check_permission('get:any_resto', payload):
                 restaurants = Restaurant.query
@@ -81,7 +82,7 @@ def get_resto(payload):
             restaurants = restaurants.filter(
                 Restaurant.name.ilike(f"%{request.args['q']}%"))
 
-        page = int(request.args.get('page', 1))
+        page = request.args.get('page', default=1, type=int)
 
     except AuthError as e:
         raise e
@@ -97,8 +98,8 @@ def get_resto(payload):
     }), 200
 
 
-@ bp.route("/restaurants", methods=['POST'])
-@ requires_auth('post:resto')
+@bp.route("/restaurants", methods=['POST'])
+@requires_auth('post:resto')
 def post_resto(payload):
     try:
         data = request.json
@@ -132,8 +133,8 @@ def post_resto(payload):
     return get_resto()
 
 
-@ bp.route("/restaurants/<int:resto_id>", methods=['PATCH'])
-@ requires_auth('patch:my_resto')
+@bp.route("/restaurants/<int:resto_id>", methods=['PATCH'])
+@requires_auth('patch:my_resto')
 def edit_resto(payload, resto_id):
     try:
         resto = Restaurant.query.get(resto_id)
@@ -171,49 +172,51 @@ def edit_resto(payload, resto_id):
     return get_resto()
 
 
-@ bp.route("/restaurants/<int:resto_id>", methods=['DELETE'])
-def delete_resto(resto_id):
+@bp.route("/restaurants/<int:resto_id>", methods=['DELETE'])
+@requires_auth('delete:my_resto')
+def delete_resto(payload, resto_id):
     try:
         resto = Restaurant.query.get(resto_id)
         if not resto:
             abort(404)
-        db.session.delete(resto)
-        db.session.commit()
 
-        restaurants = Restaurant.query.all()
+        subject = payload['sub']
+        account = Account.query.filter_by(name=subject).one_or_none()
+        if resto.account.id != account.d:
+            check_permission('delete:any_resto', payload)
 
+        resto.delete()
+
+    except AuthError as e:
+        raise e
     except Exception as e:
         abort(e.code) if e.code else abort(422)
 
-    return jsonify({
-        'success': True,
-        'category': None,
-        'restaurants': [resto.out() for resto in restaurants]
-    }), 200
+    return get_resto()
 
 
-@ bp.route("/random", methods=['POST'])
-def rando_resto():
+@bp.route("/random", methods=['GET'])
+@requires_auth('get:my_resto')
+def rando_resto(payload):
     try:
-        data = request.json
+        subject = payload['sub']
+        account = Account.query.filter_by(name=subject).one_or_none()
 
-        if data:
-            restaurants = db.session.query(Restaurant)
-            if 'category' in data:
-                restaurants = restaurants.filter(
-                    Restaurant.categories.any(Category.name.in_([data['category']])))
-            if 'visited' in data:
-                restaurants = restaurants.filter(
-                    Restaurant.visited == data['visited'])
+        cat = request.args.get('category', default=None, type=str)
+        new = 'new' in request.args
 
-            restaurants = restaurants.all()
+        restaurants = Restaurant.query.filter_by(account_id=account.id)
 
-        else:
-            restaurants = Restaurant.query.all()
+        if cat:
+            restaurants = restaurants.filter(
+                Restaurant.categories.any(Category.name.in_(cat)))
+        if new:
+            restaurants = restaurants.filter(Restaurant.visited == new)
+
     except:
         abort(422)
 
     return jsonify({
         'success': True,
-        'restaurants': [choice(restaurants).out()] if restaurants else None
+        'restaurants': [choice(restaurants.all()).out()] if restaurants else None
     }), 200
