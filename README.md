@@ -48,14 +48,15 @@ curl -X GET https://resto-rando.herokuapp.com/api/categories
 {
   "success": true,
   "categories": {
-    "0": "African"
+    "0": "African",
+    "1": "Alcohol",
   }
 }
 ```
 
 #### Restaurants
 
-##### `GET /api/restaurants?user={user_id}&page={page}&q={search term}`
+##### `GET /api/restaurants?category={cat}&user={user_id}&page={page}&q={search_term}`
 
 The the list of restaurants added by user.
 
@@ -66,16 +67,17 @@ The the list of restaurants added by user.
 
 ###### Query string parameters
 
+- `category` (string): Specify single category to filter by.
 - `user` (int): Show restaurants added by specified user. If unspecified returns restaurant list based on user role
   - Admin: All restaurants, regardless of user.
-  - User: Only restaurants added by user.
+  - User: Only restaurants added by logged-in user.
 - `page` (int): Results are paginated (10 restaurants per page). Set value to display specified page, or defaults to first page if unspecified.
 - `q` (string): Keyword to search for. Case insensitive.
 
 ###### Example requests
 
 ```bash
-curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?page=1" \
+curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?category=African&page=1" \
     --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
@@ -84,7 +86,7 @@ curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?page=1" \
 ```json
 {
   "success": true,
-  "category": null,
+  "category": "African",
   "count": 5,
   "page": 1,
   "restaurants" [
@@ -108,11 +110,11 @@ Add a new restaurant to the database.
 
 ###### Request body parameters
 
-- name (string, required): Name of the restaurant
-- address (string, required): Restaurant location
-- category (list, required): Caterogies that match the restaurant
-- visited (boolean): Whether this restaurant has been visited
-- date_visited (string): Date visited.
+- `name` (string, required): Name of the restaurant
+- `address` (string, required): Restaurant location
+- `category` (list, required): Caterogies that match the restaurant
+- `visited` (boolean): Whether this restaurant has been visited
+- `date_visited` (string): Date visited.
   - `YYYY-MM-DD`: Set date visited, uses ISO 8601 style formatting. Automatically sets `visited` to `true`.
   - `today`: Set date visited to today. Automatically sets `visited` to `true`.
   - `null`: Clears date visited. `visited` value kept as is.
@@ -132,6 +134,8 @@ curl -X POST https://resto-rando.herokuapp.com/api/restaurants \
 {
   "success": true,
   "category": null,
+  "count": 5,
+  "page": 1,
   "restaurants" [
     {
       "name": "Best Restaurant",
@@ -160,11 +164,11 @@ Edit a restaurant in the database.
 
 ###### Parameters
 
-- name (string): Name of the restaurant
-- address (string): Restaurant location
-- category (list): Caterogies that match the restaurant
-- visited (boolean): Whether this restaurant has been visited
-- date_visited (string): Date visited.
+- `name` (string): Name of the restaurant
+- `address` (string): Restaurant location
+- `category` (list): Caterogies that match the restaurant
+- `visited` (boolean): Whether this restaurant has been visited
+- `date_visited` (string): Date visited.
   - `YYYY-MM-DD`: Set date visited, uses ISO 8601 style formatting. Automatically sets `visited` to `true`.
   - `today`: Set date visited to today. Automatically sets `visited` to `true`.
   - `null`: Clears date visited. `visited` value kept as is.
@@ -184,6 +188,8 @@ curl -X PATCH https://resto-rando.herokuapp.com/api/restaurants/2 \
 {
   "success": true,
   "category": null,
+  "count": 5,
+  "page": 1,
   "restaurants" [
     {
       "name": "Best Restaurant",
@@ -223,6 +229,8 @@ curl -X DELETE https://resto-rando.herokuapp.com/api/restaurants/0 \
 {
   "success": true,
   "category": null,
+  "count": 5,
+  "page": 1,
   "restaurants" [
     {
       "name": "Best Restaurant",
@@ -236,7 +244,7 @@ curl -X DELETE https://resto-rando.herokuapp.com/api/restaurants/0 \
 
 #### Finding Restaurants
 
-##### `GET /api/random/?category={}&new`
+##### `GET /api/random/?category={cat}&new`
 
 Get a random restaurant from the database. Results can be restricted by category and visited status.
 
@@ -263,6 +271,7 @@ curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?category=Asian&ne
 {
   "success": true,
   "category": "Asian",
+  "new": true,
   "restaurants" [
     {
       "name": "Foo Foods",
@@ -270,45 +279,6 @@ curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?category=Asian&ne
       "categories": ["Asian", "Fast Food"],
       "visited": true
     }
-  ]
-}
-```
-
-##### `GET /api/categories/{category_id}/restaurants?user={user_id}&page={page}&q={search term}`
-
-Get the list of restaurants belonging to a category.
-
-###### Permissions required
-
-- `get:my_resto`
-- `get:any_resto`: Needed to see restaurants added by other users.
-
-###### Query string parameters
-
-- `user` (int): Show restaurants added by specified user. Defaults to signed-in user if unspecified. Admin role required to see restaurants added by other users.
-- `page` (int): Results are paginated (10 restaurants per page). Set value to display specified page, or defaults to first page if unspecified.
-- `q` (string): Keyword to search for. Case insensitive.
-
-###### Example requests
-
-```bash
-curl -X GET https://resto-rando.herokuapp.com/api/categories/0/restaurants \
-    --header "Authorization: Bearer $ACCESS_TOKEN"
-```
-
-###### Example responses
-
-```json
-{
-  "success": true,
-  "category": "African",
-  "restaurants" [
-    {
-      "name": "Best Restaurant",
-      "address": "123 Main Street, New York, NY",
-      "categories": ["African", "Vegan"],
-      "visited": true
-    },
   ]
 }
 ```

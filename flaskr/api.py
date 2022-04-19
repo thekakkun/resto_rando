@@ -3,7 +3,7 @@ from random import choice
 
 from flask import Blueprint, abort, jsonify, request
 
-from flaskr.auth import AuthError, requires_auth, check_permission
+from flaskr.auth import AuthError, check_permission, requires_auth
 from flaskr.models import Account, Category, Restaurant, db
 
 ITEMS_PER_PAGE = 10
@@ -41,24 +41,6 @@ def get_categories():
     }), 200
 
 
-@bp.route("categories/<int:cat_id>/restaurants", methods=['GET'])
-def get_resto_by_cat(cat_id):
-    # TODO: Should this be an endpoint or query string paramter?
-    try:
-        cat = Category.query.get(cat_id)
-        if not cat:
-            abort(404)
-
-    except Exception as e:
-        abort(e.code) if e.code else abort(422)
-
-    return jsonify({
-        'success': True,
-        'category': cat.name,
-        'restaurants': [resto.out() for resto in cat.restaurants]
-    }), 200
-
-
 @bp.route("/restaurants", methods=['GET'])
 @requires_auth('get:my_resto')
 def get_resto(payload):
@@ -78,9 +60,15 @@ def get_resto(payload):
             else:
                 restaurants = Restaurant.query.filter_by(account_id=account.id)
 
-        if request.args.get('q', None):
+        cat = request.args.get('category', default=None, type=str)
+        if cat:
             restaurants = restaurants.filter(
-                Restaurant.name.ilike(f"%{request.args['q']}%"))
+                Restaurant.categories.any(Category.name.in_(cat)))
+
+        search_term = request.args.get('q', default=None, type=str)
+        if search_term:
+            restaurants = restaurants.filter(
+                Restaurant.name.ilike(f"%{search_term}%"))
 
         page = request.args.get('page', default=1, type=int)
 
@@ -91,7 +79,7 @@ def get_resto(payload):
 
     return jsonify({
         'success': True,
-        'category': None,
+        'category': cat,
         'count': restaurants.count(),
         'page': page,
         'restaurants': [resto.out() for resto in paginate(restaurants, page)]
@@ -202,14 +190,14 @@ def rando_resto(payload):
         subject = payload['sub']
         account = Account.query.filter_by(name=subject).one_or_none()
 
-        cat = request.args.get('category', default=None, type=str)
-        new = 'new' in request.args
-
         restaurants = Restaurant.query.filter_by(account_id=account.id)
 
+        cat = request.args.get('category', default=None, type=str)
         if cat:
             restaurants = restaurants.filter(
                 Restaurant.categories.any(Category.name.in_(cat)))
+
+        new = 'new' in request.args
         if new:
             restaurants = restaurants.filter(Restaurant.visited == new)
 
@@ -218,5 +206,7 @@ def rando_resto(payload):
 
     return jsonify({
         'success': True,
+        'category': cat,
+        'new': new,
         'restaurants': [choice(restaurants.all()).out()] if restaurants else None
     }), 200
