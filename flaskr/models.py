@@ -128,32 +128,3 @@ def insert_dummy_data(app):
                     resto.insert()
 
     db.session.commit()
-
-
-    # for i, account_name in enumerate(accounts, start=1):
-    #     if not Account.query.filter_by(name=account_name).one_or_none():
-    #         db.session.add(Account(id=i, name=account_name))
-    # db.session.commit()
-
-    # db.session.add(Restaurant(
-    #     name='Best Restaurant',
-    #     address='123 Main Street, New York, NY',
-    #     categories=[
-    #         Category.query.filter_by(name='African').first(),
-    #         Category.query.filter_by(name='Vegan').first()
-    #     ],
-    #     visited=True,
-    #     account_id=1
-    # ))
-    # db.session.add(Restaurant(
-    #     name='Foo Foods',
-    #     address='123 Pacific Drive, Los Angeles, CA',
-    #     categories=[
-    #         Category.query.filter_by(name='Asian').first(),
-    #         Category.query.filter_by(name='Fast Food').first()
-    #     ],
-    #     visited=False,
-    #     account_id=2
-    # ))
-
-    # db.session.commit()
