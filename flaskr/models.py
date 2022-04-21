@@ -63,42 +63,97 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
 
+    def __repr__(self):
+        return f'{self.name}'
+
 
 def populate_cat():
     with open('categories.csv', 'r') as f:
         cats = f.read().split('\n')
         for cat_name in cats:
-            db.session.add(Category(name=cat_name))
+            if not Category.query.filter_by(name=cat_name).one_or_none():
+                db.session.add(Category(name=cat_name))
         db.session.commit()
 
 
-def insert_dummy_data():
+def insert_dummy_data(app):
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+
+
     populate_cat()
 
-    db.session.add(Account(id=1, name='auth0|6250692a17abb90069efb4a2'))
-    db.session.add(Account(id=2, name='auth0|6250694cfa08af006b866c9f'))
+    with db.session.no_autoflush:
+        dummy_data = [
+            {
+                'name': 'auth0|6250692a17abb90069efb4a2',
+                'restaurants': [
+                    Restaurant(
+                        name='Best Restaurant',
+                        address='123 Main Street, New York, NY',
+                        categories=[
+                            Category.query.filter_by(name='African').first(),
+                            Category.query.filter_by(name='Vegan').first()
+                        ],
+                        visited=True,
+                        account_id=1
+                    )
+                ]
+            },
+            {
+                'name': 'auth0|6250694cfa08af006b866c9f',
+                'restaurants': [
+                    Restaurant(
+                        name='Foo Foods',
+                        address='123 Pacific Drive, Los Angeles, CA',
+                        categories=[
+                            Category.query.filter_by(name='Asian').first(),
+                            Category.query.filter_by(name='Fast Food').first()
+                        ],
+                        visited=False,
+                        account_id=1
+                    )
+                ]
+            }
+        ]
+
+        for i, data in enumerate(dummy_data, start=1):
+            if not Account.query.filter_by(name=data['name']).one_or_none():
+                db.session.add(Account(id=i, name=data['name']))
+                db.session.commit()
+
+                for resto in data['restaurants']:
+                    resto.account_id=i
+                    resto.insert()
 
     db.session.commit()
 
-    db.session.add(Restaurant(
-        name='Best Restaurant',
-        address='123 Main Street, New York, NY',
-        categories=[
-            Category.query.filter_by(name='African').first(),
-            Category.query.filter_by(name='Vegan').first()
-        ],
-        visited=True,
-        account_id=1
-    ))
-    db.session.add(Restaurant(
-        name='Foo Foods',
-        address='123 Pacific Drive, Los Angeles, CA',
-        categories=[
-            Category.query.filter_by(name='Asian').first(),
-            Category.query.filter_by(name='Fast Food').first()
-        ],
-        visited=False,
-        account_id=1
-    ))
 
-    db.session.commit()
+    # for i, account_name in enumerate(accounts, start=1):
+    #     if not Account.query.filter_by(name=account_name).one_or_none():
+    #         db.session.add(Account(id=i, name=account_name))
+    # db.session.commit()
+
+    # db.session.add(Restaurant(
+    #     name='Best Restaurant',
+    #     address='123 Main Street, New York, NY',
+    #     categories=[
+    #         Category.query.filter_by(name='African').first(),
+    #         Category.query.filter_by(name='Vegan').first()
+    #     ],
+    #     visited=True,
+    #     account_id=1
+    # ))
+    # db.session.add(Restaurant(
+    #     name='Foo Foods',
+    #     address='123 Pacific Drive, Los Angeles, CA',
+    #     categories=[
+    #         Category.query.filter_by(name='Asian').first(),
+    #         Category.query.filter_by(name='Fast Food').first()
+    #     ],
+    #     visited=False,
+    #     account_id=2
+    # ))
+
+    # db.session.commit()

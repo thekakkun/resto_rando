@@ -13,7 +13,7 @@ REDIRECT_URI = os.environ.get('REDIRECT_URI')
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
-@bp.route('/url', methods=['GET'])
+@bp.route('/login', methods=['GET'])
 def get_auth_url():
     url = f'https://{AUTH0_DOMAIN}/authorize?audience={API_AUDIENCE}&response_type=token&client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}'
 

@@ -75,7 +75,7 @@ def create_app(test_config=None):
             'success': False,
             'error': e.code,
             'message': e.error['description']
-        }, e.code)
+        }), e.code
 
     return app
 

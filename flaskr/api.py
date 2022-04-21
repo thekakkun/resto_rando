@@ -60,15 +60,16 @@ def get_resto(payload):
             elif check_permission('get:any_resto', payload):
                 restaurants = Restaurant.query.filter_by(account_id=user)
         else:
-            if check_permission('get:any_resto', payload):
-                restaurants = Restaurant.query
-            else:
+            try:
+                if check_permission('get:any_resto', payload):
+                    restaurants = Restaurant.query
+            except AuthError:
                 restaurants = Restaurant.query.filter_by(account_id=account.id)
 
         cat = request.args.get('category', default=None, type=str)
         if cat:
             restaurants = restaurants.filter(
-                Restaurant.categories.any(Category.name.in_(cat)))
+                Restaurant.categories.any(Category.name.in_([cat])))
 
         search_term = request.args.get('q', default=None, type=str)
         if search_term:
@@ -175,7 +176,7 @@ def delete_resto(payload, resto_id):
 
         subject = payload['sub']
         account = Account.query.filter_by(name=subject).one_or_none()
-        if resto.account.id != account.d:
+        if resto.account.id != account.id:
             check_permission('delete:any_resto', payload)
 
         resto.delete()
@@ -200,7 +201,7 @@ def rando_resto(payload):
         cat = request.args.get('category', default=None, type=str)
         if cat:
             restaurants = restaurants.filter(
-                Restaurant.categories.any(Category.name.in_(cat)))
+                Restaurant.categories.any(Category.name.in_([cat])))
 
         new = 'new' in request.args
         if new:
