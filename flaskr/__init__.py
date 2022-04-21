@@ -3,6 +3,7 @@ import os
 from flask import Flask, jsonify
 
 from flaskr import api
+from flaskr import auth
 from flaskr.auth import AuthError
 from flaskr.models import db, migrate
 
@@ -42,6 +43,7 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
 
     app.register_blueprint(api.bp)
+    app.register_blueprint(auth.bp)
 
     @app.errorhandler(404)
     def not_found(e):

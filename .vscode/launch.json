@@ -12,6 +12,8 @@
             "env": {
                 "FLASK_APP": "flaskr",
                 "FLASK_ENV": "development",
+                "CLIENT_ID": "yIpSovVjw5kDcpACpbPDQ9Fekb8khROU",
+                "REDIRECT_URI": "http://localhost:5000/auth/results"
             },
             "args": [
                 "run",

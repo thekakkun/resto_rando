@@ -75,8 +75,8 @@ def populate_cat():
 def insert_dummy_data():
     populate_cat()
 
-    db.session.add(Account(id=1, name='test_admin'))
-    db.session.add(Account(id=2, name='test_user'))
+    db.session.add(Account(id=1, name='auth0|6250692a17abb90069efb4a2'))
+    db.session.add(Account(id=2, name='auth0|6250694cfa08af006b866c9f'))
 
     db.session.commit()
 

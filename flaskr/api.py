@@ -11,18 +11,23 @@ ITEMS_PER_PAGE = 10
 bp = Blueprint('api', __name__, url_prefix='/api')
 
 
-# TODO: unit testing
-
 def paginate(restaurants, page):
+    '''
+    Slice list of restaurants to page specified.
+    Size of page is specified by ITEMS_PER_PAGE.
+    '''
     page_start = (page - 1) * ITEMS_PER_PAGE
     page_end = page_start + ITEMS_PER_PAGE
     return restaurants[page_start:page_end]
 
 
-def parse_date(date_str):
+def parse_date(date_str=None):
+    '''
+    Return datetime object based on string submitted by user.
+    '''
     if not date_str:
         return None
-    elif date_str == 'today':
+    elif date_str.lower() == 'today':
         return datetime.today()
     else:
         return datetime.fromisoformat(date_str)
@@ -47,7 +52,7 @@ def get_resto(payload):
     try:
         subject = payload['sub']
         account = Account.query.filter_by(name=subject).one_or_none()
-        user = request.args.get('user', default=-1, type=int)
+        user = request.args.get('user', default=0, type=int)
 
         if user:
             if user == account.id:

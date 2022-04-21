@@ -1,11 +1,36 @@
+import os
 from functools import wraps
 
 import jwt
-from flask import request
+from flask import Blueprint, jsonify, request, render_template
 
 AUTH0_DOMAIN = 'dev-2m33ryh3.us.auth0.com'
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'resto'
+CLIENT_ID = os.environ.get('CLIENT_ID')
+REDIRECT_URI = os.environ.get('REDIRECT_URI')
+
+bp = Blueprint('auth', __name__, url_prefix='/auth')
+
+
+@bp.route('/url', methods=['GET'])
+def get_auth_url():
+    url = f'https://{AUTH0_DOMAIN}/authorize?audience={API_AUDIENCE}&response_type=token&client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}'
+
+    return jsonify({'url': url})
+
+
+@bp.route('/logout', methods=['GET'])
+def get_logout_url():
+    url = f'https://{AUTH0_DOMAIN}/logout'
+
+    return jsonify({'url': url})
+
+
+@bp.route('/results', methods=['GET'])
+def get_token():
+
+    return render_template('auth/results.html')
 
 
 class AuthError(Exception):

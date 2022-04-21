@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p>Your JSON web token is:</p>
+    <p id="jwt"></p>
+    <script>
+        const parsedHash = new URLSearchParams(
+            window.location.hash.substring(1)
+        );
+        if (parsedHash.has("access_token")) {
+            document.getElementById("jwt").innerText = parsedHash.get("access_token");
+        } else {
+            document.getElementById("jwt").innerText = "No token found";
+        }
+    </script>
+
+</body>
+
+</html>
