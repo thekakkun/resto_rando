@@ -13,6 +13,25 @@ Create a database of restaurants you have visited or are interested in visiting.
 
 3. Continue below for API endpoint reference.
 
+## Authentication
+
+### Scopes
+
+#### User
+
+- `get:my_resto`: Get data on restaurants added by you.
+- `post:resto`: Add restaurant.
+- `patch:my_resto`: Edit data for restaurants added by you.
+- `delete:my_resto`: Delete restaurants added by you.
+
+#### Admin
+
+All scopes available to user roles +
+
+- `get:any_resto`: Get data on any restaurant, regardless of user.
+- `patch:any_resto`: Edit data for any restaurant, regardless of user.
+- `delete:any_resto`: Delete any restaurant, regardless of user.
+
 ## API Documentation
 
 ### Error Handling
