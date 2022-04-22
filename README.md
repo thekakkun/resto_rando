@@ -2,6 +2,17 @@
 
 This is the capstone project completed for [Udacity's Full Stack Web Developer Nanodegree Program](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd0044).
 
+Create a database of restaurants you have visited or are interested in visiting. Search through your list of restaurants, or just get one by random to mix things up.
+
+## Getting Started
+
+1. Visit the URL below to get your login link (Resto Rando uses Auth0 as the authentication platform.)  
+  <https://resto-rando.herokuapp.com/auth/login>
+
+2. It should automatically redirect to <https://resto-rando.herokuapp.com/auth/result>, which will display your access token.
+
+3. Continue below for API endpoint reference.
+
 ## API Documentation
 
 ### Error Handling
@@ -25,6 +36,60 @@ Some common errors:
 - `422`: Request unprocessable
 
 ### Endpoints
+
+#### Authentication
+
+##### `GET /auth/login`
+
+Get the login url.
+
+###### Permissions required
+
+None.
+
+###### Example requests
+
+```bash
+curl -X GET https://resto-rando.herokuapp.com/auth/login
+```
+
+###### Example responses
+
+```json
+{
+  "url": "https://dev-2m33ryh3.us.auth0.com/authorize?audience=resto&response_type=token&client_id=yIpSovVjw5kDcpACpbPDQ9Fekb8khROU&redirect_uri=https://resto-rando.herokuapp.com/auth/results"
+}
+```
+
+##### `GET /auth/logout`
+
+Get the logout url.
+
+###### Permissions required
+
+None.
+
+###### Example requests
+
+```bash
+curl -X GET https://resto-rando.herokuapp.com/auth/logout
+```
+
+###### Example responses
+
+```json
+{
+  "url": "https://dev-2m33ryh3.us.auth0.com/logout"
+}
+```
+
+##### `GET /auth/results`
+
+Get your access token. This endpoint is only available using a browser. [Visit the URL here.](https://resto-rando.herokuapp.com/auth/results)
+
+###### Permissions required
+
+None.
 
 #### Categories
 
