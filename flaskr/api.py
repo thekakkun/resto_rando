@@ -35,6 +35,7 @@ def parse_date(date_str=None):
 
 @bp.route("/categories", methods=['GET'])
 def get_categories():
+    '''Return the list of possible restaurant categories'''
     try:
         categories = Category.query.all()
     except:
@@ -49,6 +50,10 @@ def get_categories():
 @bp.route("/restaurants", methods=['GET'])
 @requires_auth('get:my_resto')
 def get_resto(payload):
+    '''Return a list of restaurants
+
+    If the account is a normal user (only has get:my_resto scope), restaurants tied to current account is returned. If the account has admin credentials (has get:any_resto scope), all restaurants regardless of account are returned.
+    '''
     try:
         subject = payload['sub']
         account = Account.query.filter_by(name=subject).one_or_none()
@@ -104,6 +109,7 @@ def get_resto(payload):
 @bp.route("/restaurants", methods=['POST'])
 @requires_auth('post:resto')
 def post_resto(payload):
+    '''Adds a restaurant to the database'''
     try:
         data = request.json
         subject = payload['sub']
@@ -139,6 +145,7 @@ def post_resto(payload):
 @bp.route("/restaurants/<int:resto_id>", methods=['PATCH'])
 @requires_auth('patch:my_resto')
 def edit_resto(payload, resto_id):
+    '''Edit a restaurant in the database, specified by restaurant ID.'''
     try:
         resto = Restaurant.query.get(resto_id)
         if not resto:
@@ -178,6 +185,7 @@ def edit_resto(payload, resto_id):
 @bp.route("/restaurants/<int:resto_id>", methods=['DELETE'])
 @requires_auth('delete:my_resto')
 def delete_resto(payload, resto_id):
+    '''Delete a restaurant in the database, specified by ID.'''
     try:
         resto = Restaurant.query.get(resto_id)
         if not resto:
@@ -201,6 +209,7 @@ def delete_resto(payload, resto_id):
 @bp.route("/random", methods=['GET'])
 @requires_auth('get:my_resto')
 def rando_resto(payload):
+    '''Return a random restaurant from the database.'''
     try:
         subject = payload['sub']
         account = Account.query.filter_by(name=subject).one_or_none()
