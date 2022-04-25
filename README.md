@@ -152,6 +152,7 @@ The the list of restaurants added by user.
 ###### Query string parameters
 
 - `category` (string): Specify single category to filter by.
+- `visited` (boolean): Specify `true` or `false` to only show from restaurants you have / have not visited.
 - `user` (int): Show restaurants added by specified user. If unspecified returns restaurant list based on user role
   - Admin: All restaurants, regardless of user.
   - User: Only restaurants added by logged-in user.
@@ -171,6 +172,7 @@ curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?category=African&
 {
   "success": true,
   "category": "African",
+  "visited": null,
   "count": 5,
   "page": 1,
   "restaurants" [
@@ -339,7 +341,7 @@ Get a random restaurant from the database. Results can be restricted by category
 ###### Query string parameters
 
 - `category` (string): Specify single category. Result must include this category.
-- `new`: If the `new` parameter is provided, only return restaurants not yet visited.
+- `visited` (boolean): Specify `true` or `false` to only pull from restaurants you have / have not visited.
 
 ###### Example requests
 
@@ -355,7 +357,7 @@ curl -X GET "https://resto-rando.herokuapp.com/api/restaurants?category=Asian&ne
 {
   "success": true,
   "category": "Asian",
-  "new": true,
+  "visited": true,
   "restaurants" [
     {
       "name": "Foo Foods",

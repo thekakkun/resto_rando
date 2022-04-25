@@ -71,6 +71,13 @@ def get_resto(payload):
             restaurants = restaurants.filter(
                 Restaurant.categories.any(Category.name.in_([cat])))
 
+        visited = request.args.get('visited', default=None, type=str)
+        if visited.lower() in ['true', 'false']:
+            visited = True if visited.lower() == 'true' else False
+            restaurants = restaurants.filter(Restaurant.visited == visited)
+        else:
+            abort(422)
+
         search_term = request.args.get('q', default=None, type=str)
         if search_term:
             restaurants = restaurants.filter(
@@ -86,6 +93,7 @@ def get_resto(payload):
     return jsonify({
         'success': True,
         'category': cat,
+        'visited': visited,
         'count': restaurants.count(),
         'page': page,
         'restaurants': [resto.out() for resto in paginate(restaurants, page)]
@@ -203,9 +211,12 @@ def rando_resto(payload):
             restaurants = restaurants.filter(
                 Restaurant.categories.any(Category.name.in_([cat])))
 
-        new = 'new' in request.args
-        if new:
-            restaurants = restaurants.filter(Restaurant.visited == new)
+        visited = request.args.get('visited', default=None, type=str)
+        if visited.lower() in ['true', 'false']:
+            visited = True if visited.lower() == 'true' else False
+            restaurants = restaurants.filter(Restaurant.visited == visited)
+        else:
+            abort(422)
 
     except:
         abort(422)
@@ -213,6 +224,6 @@ def rando_resto(payload):
     return jsonify({
         'success': True,
         'category': cat,
-        'new': new,
+        'visited': visited,
         'restaurants': [choice(restaurants.all()).out()] if restaurants else None
     }), 200
