@@ -72,11 +72,12 @@ def get_resto(payload):
                 Restaurant.categories.any(Category.name.in_([cat])))
 
         visited = request.args.get('visited', default=None, type=str)
-        if visited.lower() in ['true', 'false']:
-            visited = True if visited.lower() == 'true' else False
-            restaurants = restaurants.filter(Restaurant.visited == visited)
-        else:
-            abort(422)
+        if visited:
+            if visited.lower() not in ['true', 'false']:
+                abort(422)
+            else:
+                visited = True if visited.lower() == 'true' else False
+                restaurants = restaurants.filter(Restaurant.visited == visited)
 
         search_term = request.args.get('q', default=None, type=str)
         if search_term:
@@ -212,11 +213,12 @@ def rando_resto(payload):
                 Restaurant.categories.any(Category.name.in_([cat])))
 
         visited = request.args.get('visited', default=None, type=str)
-        if visited.lower() in ['true', 'false']:
-            visited = True if visited.lower() == 'true' else False
-            restaurants = restaurants.filter(Restaurant.visited == visited)
-        else:
-            abort(422)
+        if visited:
+            if visited.lower() not in ['true', 'false']:
+                abort(422)
+            else:
+                visited = True if visited.lower() == 'true' else False
+                restaurants = restaurants.filter(Restaurant.visited == visited)
 
     except:
         abort(422)
