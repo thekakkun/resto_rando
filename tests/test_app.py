@@ -1,8 +1,8 @@
-import json
+import os
 import unittest
 
 from flaskr import create_app
-from flaskr.models import Account, Category, Restaurant, db, insert_dummy_data
+from flaskr.models import db, insert_dummy_data
 
 
 class CategoriesTest(unittest.TestCase):
@@ -36,7 +36,7 @@ class AdminTest(unittest.TestCase):
     def setUp(self):
         self.app = create_app(test_config=True)
         self.client = self.app.test_client
-        self.token = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImhyLUhEQmxDZHBDZWZhcVBwRUEyTiJ9.eyJpc3MiOiJodHRwczovL2Rldi0ybTMzcnloMy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NjI1MDY5MmExN2FiYjkwMDY5ZWZiNGEyIiwiYXVkIjoicmVzdG8iLCJpYXQiOjE2NTA1NjI2NjcsImV4cCI6MTY1MDU2OTg2NywiYXpwIjoieUlwU292Vmp3NWtEY3BBQ3BiUERROUZla2I4a2hST1UiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTphbnlfcmVzdG8iLCJkZWxldGU6bXlfcmVzdG8iLCJnZXQ6YW55X3Jlc3RvIiwiZ2V0Om15X3Jlc3RvIiwicGF0Y2g6YW55X3Jlc3RvIiwicGF0Y2g6bXlfcmVzdG8iLCJwb3N0OnJlc3RvIl19.hnUjAmUlYSyu2Z5lMuTmpwvOzNYt_0KC1C6X2vTrSMTtGDSDBNRkNH76Rn34ggQ5jTGb_r_GhAb-_bcAHnq-obn22IsuSq-rekmYO4qy7i98Ofn_g4eyK16HT2iqmg7oGTmAff9EMVuqnTFDt1uAJdTcpzbUrChQrT9KYEmlTb4eTivq4NPi30DlDVkEfb_yL7biaMDfHymaWLYuxGUNnbENA_LkEb1niI6D811sEbETuwTFI8M-DH6BAj-oyRsrN04oQmOnzIWY69lZgX_IDiMhKXokHFtT67bmZXHy3w-BhB9Ki3U5dwAQUfR4xCPrxLCpCcIfi2tS6faQAZLijQ'
+        self.token = os.environ.get('ADMIN_JWT')
 
         with self.app.app_context():
             insert_dummy_data(self.app)
@@ -151,7 +151,7 @@ class UserTest(unittest.TestCase):
     def setUp(self):
         self.app = create_app(test_config=True)
         self.client = self.app.test_client
-        self.token = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImhyLUhEQmxDZHBDZWZhcVBwRUEyTiJ9.eyJpc3MiOiJodHRwczovL2Rldi0ybTMzcnloMy51cy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NjI1MDY5NGNmYTA4YWYwMDZiODY2YzlmIiwiYXVkIjoicmVzdG8iLCJpYXQiOjE2NTA1NjQ2MjAsImV4cCI6MTY1MDU3MTgyMCwiYXpwIjoieUlwU292Vmp3NWtEY3BBQ3BiUERROUZla2I4a2hST1UiLCJzY29wZSI6IiIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpteV9yZXN0byIsImdldDpteV9yZXN0byIsInBhdGNoOm15X3Jlc3RvIiwicG9zdDpyZXN0byJdfQ.csibj5XBv4_9KgQjczZabsWgiDTR7OKaxdun4wUQZryVDt2H0_XX20ik7xSTqueDuCpRXgNY75RWNJiiFM44TWGRiBhvFZWikPp20QcVwKnPRaRnnj7h6OZhsbWsYCMYxEBNpPSV6slZtkt2JNEXOCaZIw_t3V4oKKE2s5xrPC23MggRGSuodz9tJN8GhSstdtUIFFqNrrF91ypUdR6tosOMik_Ni5w6d-erGlcDlBGkbM6L32z5vXYYl_oTYbBSMHbc0pt82gNpTbDBRfUzBes8rdAMzVilZAhxPcPr_r-LobmATH7Cj1BJriZQ-f_3rGwqqZ1-zFKqxCpR9HjV0w'
+        self.token = os.environ.get('USER_JWT')
 
         with self.app.app_context():
             insert_dummy_data(self.app)

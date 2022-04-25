@@ -4,9 +4,9 @@ from functools import wraps
 import jwt
 from flask import Blueprint, jsonify, request, render_template
 
-AUTH0_DOMAIN = 'dev-2m33ryh3.us.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'resto'
+AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
+ALGORITHMS = os.environ.get('ALGORITHMS')
+API_AUDIENCE = os.environ.get('API_AUDIENCE')
 CLIENT_ID = os.environ.get('CLIENT_ID')
 REDIRECT_URI = os.environ.get('REDIRECT_URI')
 

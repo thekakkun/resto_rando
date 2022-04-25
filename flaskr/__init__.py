@@ -18,16 +18,10 @@ def create_app(test_config=None):
     app = Flask(__name__)
 
     if test_config is None:
-        DB_NAME = 'resto_rando'
-
-        if not DATABASE_URL:
-            app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}'
-        else:
-            app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+        app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     else:
-        DB_NAME = 'resto_rando_test'
-        app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}'
+        app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL + '_test'
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     try:

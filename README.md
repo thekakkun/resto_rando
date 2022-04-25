@@ -1,8 +1,8 @@
 # Resto Rando
 
-This is the capstone project completed for [Udacity's Full Stack Web Developer Nanodegree Program](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd0044).
-
 Create a database of restaurants you have visited or are interested in visiting. Search through your list of restaurants, or just get one by random to mix things up.
+
+This is the capstone project completed for [Udacity's Full Stack Web Developer Nanodegree Program](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd0044).
 
 ## Getting Started
 
