@@ -4,7 +4,7 @@ Create a database of restaurants you have visited or are interested in visiting.
 
 This is the capstone project completed for [Udacity's Full Stack Web Developer Nanodegree Program](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd0044).
 
-## Getting Started
+## Try it out
 
 1. Visit the URL below to get your login link (Resto Rando uses Auth0 as the authentication platform.)  
   <https://resto-rando.herokuapp.com/auth/login>
@@ -12,6 +12,58 @@ This is the capstone project completed for [Udacity's Full Stack Web Developer N
 2. It should automatically redirect to <https://resto-rando.herokuapp.com/auth/result>, which will display your access token.
 
 3. Continue below for API endpoint reference.
+
+## Getting Started
+
+### Dependencies
+
+- [Python 3](https://www.python.org/)
+  - [Flask](https://flask.palletsprojects.com/en/2.1.x/): Flask is a lightweight web application framework, used to implement the requests and responses for the API.
+  - [SQLAlchemy](https://www.sqlalchemy.org/): SQLAlchemy is used as the ORM to interface with the PosggreSQL database.
+- [PostgreSQL 12](https://www.postgresql.org/)
+
+### Installing required python packages
+
+Run the following command in the root folder of the project to install the required python packages.
+
+```bash
+pip install -r requirements.txt
+```
+
+### Initiating the database
+
+1. Create a database using the PostgreSQL CLI.
+
+    ```bash
+    createdb resto_rando
+    ```
+
+2. Initiate and migrate the database.
+
+    ```bash
+    flask db upgrade
+    ```
+
+### Running the application
+
+1. The necessary credentials to run the project are provided in the setup.sh file.
+
+    ```bash
+    source setup.sh
+    ```
+
+    To run the application on a local development environment, the additional environment variables are necessary.
+
+    ```bash
+    export FLASK_APP=flaskr
+    export FLASK_ENV=development
+    ```
+
+2. Run the following command to start the local development server
+
+    ```bash
+    flask run
+    ```
 
 ## Authentication
 
