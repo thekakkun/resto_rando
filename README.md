@@ -21,6 +21,7 @@ This is the capstone project completed for [Udacity's Full Stack Web Developer N
   - [Flask](https://flask.palletsprojects.com/en/2.1.x/): Flask is a lightweight web application framework, used to implement the requests and responses for the API.
   - [SQLAlchemy](https://www.sqlalchemy.org/): SQLAlchemy is used as the ORM to interface with the PosggreSQL database.
 - [PostgreSQL 12](https://www.postgresql.org/)
+- [Auth0](https://auth0.com/): Auth0 is used as the authentication and authorization service.
 
 ### Installing required python packages
 
@@ -63,6 +64,34 @@ pip install -r requirements.txt
 
     ```bash
     flask run
+    ```
+
+### Hosting the application on Heroku
+
+1. Create an app in Heroku Cloud. This requires a [Heroku](https://www.heroku.com/) account and the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) to be installed on your machine.
+
+    ```bash
+    heroku create resto-rando --buildpack heroku/python
+    ```
+
+2. Add PostgreSQL addon for the database
+
+    ```bash
+    heroku addons:create heroku-postgresql:hobby-dev --app resto-rando
+    ```
+
+3. Specify the required environment variables through the [Heroku Dashboard](https://dashboard.heroku.com/) settings.
+
+    - `API_AUDIENCE`
+    - `AUTH0_DOMAIN`
+    - `CLIENT_ID`
+    - `FLASK_APP`
+    - `REDIRECT_URI`
+
+4. Push the application files to Heroku. It will be built on Heroku automatically.
+
+    ```bash
+    git push heroku main
     ```
 
 ## Authentication
